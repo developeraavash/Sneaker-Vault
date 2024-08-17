@@ -1,0 +1,108 @@
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id Int @id @default(autoincrement()) 
+  email String @unique
+  firstName String
+  lastName String
+  password String
+  address String
+  dateOfBirth String
+  cart Cart[]
+  orders Order[]
+  checkoutSession CheckoutSession[]
+}
+
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  product Product[]
+}
+
+
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  categoryId Int
+  category Category @relation(fields: [categoryId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  price Float
+  stock Int
+  url String
+  description String?
+  images Image[]
+  carts Cart[]
+  orderItems OrderItem[]
+}
+
+
+model Image {
+  id Int @id @default(autoincrement())
+  url String
+  productId Int
+  products Product @relation(fields: [productId],references: [id])
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  userId Int
+  productId Int
+  quantity Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@unique([userId,productId])
+}
+
+model Order{
+  id Int @id @default(autoincrement())
+  userId Int 
+  user User @relation(fields: [userId], references: [id])
+  items OrderItem[]
+  total Float
+  status String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+  orderId Int
+  order Order @relation(fields: [orderId],references: [id])
+  productId Int
+  product Product @relation(fields: [productId], references: [id])
+  quantity Int
+  price Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CheckoutSession{
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  country String
+  apartment String
+  city String
+  phone String
+  address String
+  email String
+  firstName String
+  lastName String
+}

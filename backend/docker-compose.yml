@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - 5000:5000
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      - NODE_ENV=development
+
+  redis:
+    image: "redis-alpine"
+    ports:
+      - 6379:6379
+  
+  mysql:
+    image: "latest"
+    ports:
+      - 3306:3306
